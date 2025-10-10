@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Debug Add-on Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .copy-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background: #0056b3;
+        }
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
+            display: block;
+            width: 100%;
+        }
+        .download-btn:hover {
+            background: #218838;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Local Debug Add-on Generator</h1>
+        
+        <div class="step">
+            <h3>Step 1: Generate the Add-on Files</h3>
+            <p>Click the button below to automatically generate and download the Local Debug add-on as a ZIP file.</p>
+            <button class="download-btn" onclick="generateAddon()">📦 Download Local Debug Add-on ZIP</button>
+            <div class="success" id="success">✅ Add-on generated successfully! Check your downloads folder.</div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Install in Local by Flywheel</h3>
+            <ol>
+                <li>Open <strong>Local by Flywheel</strong></li>
+                <li>Go to the <strong>Add-ons</strong> tab</li>
+                <li>Click <strong>"Add from Disk"</strong></li>
+                <li>Select the downloaded <code>local-debug-addon.zip</code> file</li>
+                <li>Click <strong>"Open"</strong></li>
+                <li>Restart Local if prompted</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Test the Add-on</h3>
+            <ol>
+                <li>Open any site in Local</li>
+                <li>Go to the <strong>Tools</strong> tab</li>
+                <li>Look for a <strong>"Debug"</strong> panel</li>
+                <li>Click on it to see the debug interface</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>What the Add-on Does</h3>
+            <p>The Local Debug add-on adds a "Debug" panel to each site's Tools tab in Local by Flywheel. The panel includes:</p>
+            <ul>
+                <li>🔧 Debug tools interface</li>
+                <li>📊 Placeholder for error logs, debug logs, and plugin analysis</li>
+                <li>✅ Test functionality to verify the add-on is working</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function generateAddon() {
+            const zip = new JSZip();
+            
+            // Add index.js
+            zip.file("index.js", `// Local Debug Add-on
+console.log('Local Debug Add-on: Loading...');
+
+// Simple debug component
+const DebugPanel = () => {
+  return {
+    type: 'div',
+    props: {
+      style: {
+        padding: '20px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e1e5e9',
+        borderRadius: '8px'
+      },
+      children: [
+        {
+          type: 'h2',
+          props: {
+            style: { 
+              color: '#2c3e50', 
+              marginBottom: '16px',
+              fontSize: '20px',
+              fontWeight: '600'
+            },
+            children: '🔧 Debug Tools'
+          }
+        },
+        {
+          type: 'p',
+          props: {
+            style: { 
+              color: '#6c757d', 
+              marginBottom: '16px',
+              fontSize: '14px'
+            },
+            children: 'This is a working Local Debug add-on panel.'
+          }
+        },
+        {
+          type: 'button',
+          props: {
+            style: {
+              padding: '8px 16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '14px'
+            },
+            onClick: () => alert('Debug panel is working!'),
+            children: 'Test Debug Panel'
+          }
+        }
+      ]
+    }
+  };
+};
+
+// Register with Local's hooks system
+try {
+  // Try to get hooks from various possible locations
+  let hooks = null;
+  
+  if (typeof window !== 'undefined' && window.local && window.local.hooks) {
+    hooks = window.local.hooks;
+  } else if (typeof global !== 'undefined' && global.hooks) {
+    hooks = global.hooks;
+  } else {
+    // Try requiring the addon API
+    try {
+      const addonAPI = require('@local/addon-api');
+      hooks = addonAPI.hooks;
+    } catch (e) {
+      console.log('Local Debug: Could not require @local/addon-api');
+    }
+  }
+  
+  if (hooks) {
+    console.log('Local Debug: Found hooks API, registering add-on...');
+    
+    hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+      console.log('Local Debug: Adding debug panel for site:', site?.name);
+      
+      toolsItems.push({
+        id: 'local-debug-panel',
+        label: 'Debug',
+        component: DebugPanel
+      });
+      
+      return toolsItems;
+    });
+    
+    console.log('Local Debug: Successfully registered!');
+  } else {
+    console.error('Local Debug: Could not find Local hooks API');
+  }
+} catch (error) {
+  console.error('Local Debug: Error registering add-on:', error);
+}
+
+module.exports = { DebugPanel };`);
+
+            // Add package.json
+            zip.file("package.json", `{
+  "name": "local-debug",
+  "version": "1.0.0",
+  "description": "A Local by Flywheel add-on for debugging WordPress sites",
+  "main": "index.js",
+  "author": "Local Debug Add-on",
+  "license": "MIT",
+  "keywords": ["local", "flywheel", "wordpress", "debug", "development"],
+  "engines": {
+    "node": ">=12.0.0",
+    "local": ">=6.0.0"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}`);
+
+            // Add addon.json
+            zip.file("addon.json", `{
+  "name": "Local Debug",
+  "slug": "local-debug",
+  "version": "1.0.0",
+  "description": "Enhanced debugging tools for WordPress development in Local by Flywheel",
+  "author": "Local Debug Team",
+  "main": "index.js",
+  "engines": {
+    "local": ">=6.0.0"
+  }
+}`);
+
+            // Add README.md
+            zip.file("README.md", `# Local Debug Add-on
+
+A Local by Flywheel add-on that provides debugging tools for WordPress development.
+
+## Installation
+
+1. Download the add-on ZIP file
+2. Open Local by Flywheel
+3. Go to Add-ons → "Add from Disk"
+4. Select the ZIP file
+5. Restart Local if prompted
+
+## Usage
+
+1. Open any site in Local
+2. Go to the Tools tab
+3. Click on the "Debug" panel
+
+## Features
+
+- Debug tools interface
+- Error log viewer (placeholder)
+- Debug log viewer (placeholder)
+- Plugin analyzer (placeholder)
+- Database explorer (placeholder)
+
+## Requirements
+
+- Local by Flywheel 6.0.0 or higher
+- Node.js 12.0.0 or higher
+`);
+
+            // Generate and download the ZIP
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'local-debug-addon.zip';
+                link.click();
+                
+                // Show success message
+                document.getElementById('success').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success').style.display = 'none';
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
