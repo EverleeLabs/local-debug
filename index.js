@@ -1,27 +1,64 @@
-const { hooks } = require('@local/addon-api');
 const path = require('path');
 const fs = require('fs');
 
-// Import the React component
-const LocalDebugPanel = require('./src/components/LocalDebugPanel.jsx').default;
+console.log('Local Debug add-on: Starting initialization...');
 
-// Register the Debug panel in the Tools tab using content hooks
-hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
-  console.log('Adding Debug panel to Tools tab for site:', site?.name);
+// Check if we're running in Local's context
+if (typeof window !== 'undefined' && window.local && window.local.hooks) {
+  console.log('Local Debug add-on: Running in Local context');
   
-  // Add the Debug panel to the tools items
-  toolsItems.push({
-    id: 'local-debug-panel',
-    label: 'Debug',
-    component: LocalDebugPanel,
-    props: {
-      site: site,
-      addonSlug: 'local-debug'
+  // Import the React component
+  const LocalDebugPanel = require('./src/components/LocalDebugPanel.js');
+  
+  // Register the Debug panel in the Tools tab using content hooks
+  window.local.hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+    console.log('Local Debug add-on: Adding Debug panel to Tools tab for site:', site?.name);
+    
+    try {
+      // Add the Debug panel to the tools items
+      toolsItems.push({
+        id: 'local-debug-panel',
+        label: 'Debug',
+        component: LocalDebugPanel,
+        props: {
+          site: site,
+          addonSlug: 'local-debug'
+        }
+      });
+      
+      console.log('Local Debug add-on: Successfully added Debug panel');
+    } catch (error) {
+      console.error('Local Debug add-on: Error adding Debug panel:', error);
     }
+    
+    return toolsItems;
   });
+} else {
+  console.log('Local Debug add-on: Not running in Local context, using fallback approach');
   
-  return toolsItems;
-});
+  // Fallback: Try to access hooks globally
+  if (typeof global !== 'undefined' && global.hooks) {
+    const LocalDebugPanel = require('./src/components/LocalDebugPanel.js');
+    
+    global.hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+      console.log('Local Debug add-on: Adding Debug panel to Tools tab for site:', site?.name);
+      
+      toolsItems.push({
+        id: 'local-debug-panel',
+        label: 'Debug',
+        component: LocalDebugPanel,
+        props: {
+          site: site,
+          addonSlug: 'local-debug'
+        }
+      });
+      
+      return toolsItems;
+    });
+  } else {
+    console.error('Local Debug add-on: Could not find Local hooks API');
+  }
+}
 
 console.log('Local Debug add-on: Registered Debug panel in Tools tab');
 
