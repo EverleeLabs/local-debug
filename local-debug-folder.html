@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Debug Add-on - Folder Version</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+            display: inline-block;
+        }
+        .download-btn:hover {
+            background: #218838;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Local Debug Add-on - Folder Installation</h1>
+        
+        <div class="instructions">
+            <h3>📁 Correct Installation Method:</h3>
+            <ol>
+                <li><strong>Create a folder</strong> called <code>local-debug-addon</code> on your computer</li>
+                <li><strong>Download the 3 files</strong> below into that folder</li>
+                <li><strong>In Local:</strong> Add-ons → "Add from Disk" → Select the <strong>folder</strong></li>
+                <li><strong>Restart Local</strong> if prompted</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Create the Folder</h3>
+            <p>Create a new folder on your computer called <code>local-debug-addon</code></p>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Download These 3 Files</h3>
+            <p>Download each file and save it in the <code>local-debug-addon</code> folder:</p>
+            
+            <h4>File 1: index.js</h4>
+            <button class="download-btn" onclick="downloadFile('index.js', getIndexJs())">📄 Download index.js</button>
+            
+            <h4>File 2: package.json</h4>
+            <button class="download-btn" onclick="downloadFile('package.json', getPackageJson())">📄 Download package.json</button>
+            
+            <h4>File 3: addon.json</h4>
+            <button class="download-btn" onclick="downloadFile('addon.json', getAddonJson())">📄 Download addon.json</button>
+            
+            <div class="success" id="success">✅ Files downloaded! Now create the folder and use "Add from Disk" in Local.</div>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Install in Local</h3>
+            <ol>
+                <li>Open <strong>Local by Flywheel</strong></li>
+                <li>Go to <strong>Add-ons</strong> tab</li>
+                <li>Click <strong>"Add from Disk"</strong></li>
+                <li>Select the <strong>local-debug-addon folder</strong> (not individual files)</li>
+                <li>Click <strong>"Open"</strong></li>
+                <li>Restart Local if prompted</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 4: Test the Add-on</h3>
+            <ol>
+                <li>Open any site in Local</li>
+                <li>Go to the <strong>Tools</strong> tab</li>
+                <li>Look for a <strong>"Debug"</strong> panel</li>
+                <li>Click on it to see the debug interface</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>🔍 Troubleshooting</h3>
+            <p><strong>If "Add from Disk" still doesn't work:</strong></p>
+            <ol>
+                <li><strong>Check Local version:</strong> Make sure you're using Local 6.0.0 or higher</li>
+                <li><strong>Try manual installation:</strong> Copy the folder directly to Local's add-ons directory:
+                    <ul>
+                        <li><strong>Windows:</strong> <code>%APPDATA%\Local\addons\</code></li>
+                        <li><strong>macOS:</strong> <code>~/Library/Application Support/Local/addons/</code></li>
+                        <li><strong>Linux:</strong> <code>~/.config/Local/addons/</code></li>
+                    </ul>
+                </li>
+                <li><strong>Check console:</strong> Open Local's developer console (F12) and look for error messages</li>
+                <li><strong>Restart Local:</strong> Always restart Local after installing add-ons</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function getIndexJs() {
+            return `// Local Debug Add-on - Simplified Version
+console.log('Local Debug Add-on: Loading...');
+
+// Simple debug component
+const LocalDebugPanel = () => {
+  return {
+    type: 'div',
+    props: {
+      style: {
+        padding: '20px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e1e5e9',
+        borderRadius: '8px',
+        margin: '10px'
+      },
+      children: [
+        {
+          type: 'h2',
+          props: {
+            style: { 
+              color: '#2c3e50', 
+              marginBottom: '16px',
+              fontSize: '20px',
+              fontWeight: '600'
+            },
+            children: '🔧 Local Debug Tools'
+          }
+        },
+        {
+          type: 'p',
+          props: {
+            style: { 
+              color: '#6c757d', 
+              marginBottom: '16px',
+              fontSize: '14px'
+            },
+            children: 'This is a working Local Debug add-on panel!'
+          }
+        },
+        {
+          type: 'button',
+          props: {
+            style: {
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500'
+            },
+            onClick: () => {
+              console.log('Debug panel button clicked!');
+              alert('🎉 Debug panel is working correctly!');
+            },
+            children: '✅ Test Debug Panel'
+          }
+        }
+      ]
+    }
+  };
+};
+
+// Register with Local's hooks system
+function registerAddon() {
+  console.log('Local Debug: Attempting to register...');
+  
+  // Try different methods to access hooks
+  const hooksMethods = [
+    () => typeof window !== 'undefined' && window.local && window.local.hooks,
+    () => typeof global !== 'undefined' && global.hooks,
+    () => {
+      try {
+        const { hooks } = require('@local/addon-api');
+        return hooks;
+      } catch (e) {
+        return null;
+      }
+    }
+  ];
+  
+  for (let i = 0; i < hooksMethods.length; i++) {
+    try {
+      const hooks = hooksMethods[i]();
+      if (hooks) {
+        console.log(\`Local Debug: Using method \${i + 1} to access hooks\`);
+        
+        hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+          console.log('Local Debug: Adding debug panel for site:', site?.name || 'Unknown');
+          
+          toolsItems.push({
+            id: 'local-debug-panel',
+            label: 'Debug',
+            component: LocalDebugPanel,
+            props: {
+              site: site,
+              addonSlug: 'local-debug'
+            }
+          });
+          
+          console.log('Local Debug: Successfully added debug panel');
+          return toolsItems;
+        });
+        
+        console.log('Local Debug: Add-on registered successfully!');
+        return true;
+      }
+    } catch (error) {
+      console.log(\`Local Debug: Method \${i + 1} failed:\`, error.message);
+    }
+  }
+  
+  console.error('Local Debug: Could not register add-on');
+  return false;
+}
+
+// Register the add-on
+registerAddon();
+
+module.exports = { LocalDebugPanel };`;
+        }
+
+        function getPackageJson() {
+            return `{
+  "name": "local-debug",
+  "version": "1.0.0",
+  "description": "A Local by Flywheel add-on for debugging WordPress sites",
+  "main": "index.js",
+  "author": "Local Debug Add-on",
+  "license": "MIT",
+  "keywords": ["local", "flywheel", "wordpress", "debug", "development"],
+  "engines": {
+    "node": ">=12.0.0",
+    "local": ">=6.0.0"
+  }
+}`;
+        }
+
+        function getAddonJson() {
+            return `{
+  "name": "Local Debug",
+  "slug": "local-debug",
+  "version": "1.0.0",
+  "description": "Enhanced debugging tools for WordPress development in Local by Flywheel",
+  "author": "Local Debug Team",
+  "main": "index.js",
+  "engines": {
+    "local": ">=6.0.0"
+  }
+}`;
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+            
+            document.getElementById('success').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('success').style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
