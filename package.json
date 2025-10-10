@@ -7,39 +7,14 @@
   "license": "MIT",
   "keywords": ["local", "flywheel", "wordpress", "debug", "development"],
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=12.0.0",
+    "local": ">=6.0.0"
   },
-  "local": {
-    "name": "Local Debug",
-    "description": "Enhanced debugging tools for WordPress development in Local",
-    "version": "1.0.0",
-    "author": "Local Debug Team",
-    "homepage": "https://github.com/local-debug/local-debug-addon",
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/local-debug/local-debug-addon.git"
-    },
-    "bugs": {
-      "url": "https://github.com/local-debug/local-debug-addon/issues"
-    },
-    "main": "index.js",
-    "scripts": {
-      "start": "node index.js",
-      "build": "npm run build:css && npm run build:js",
-      "build:css": "sass src/styles/main.scss dist/styles/main.css",
-      "build:js": "webpack --mode production",
-      "dev": "webpack --mode development --watch"
-    },
-    "dependencies": {
-      "electron": "^20.0.0"
-    },
-    "devDependencies": {
-      "webpack": "^5.0.0",
-      "webpack-cli": "^4.0.0",
-      "sass": "^1.50.0",
-      "css-loader": "^6.0.0",
-      "style-loader": "^3.0.0",
-      "file-loader": "^6.0.0"
-    }
+  "dependencies": {
+    "@local/addon-api": "^1.0.0"
+  },
+  "devDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }

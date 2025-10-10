@@ -96,106 +96,100 @@ const LocalDebugPanel = ({ site, addonSlug }) => {
     }
   };
 
-  const executeQuery = async (query) => {
-    try {
-      const response = await window.electronAPI.invoke('execute-db-query', site.id, query);
-      return response;
-    } catch (err) {
-      setError(err.message);
-      return null;
-    }
-  };
-
   const renderOverview = () => (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-red-600">
-              {debugData.errorLogs.length}
-            </div>
-            <p className="text-sm text-gray-600">Error Logs</p>
-          </CardContent>
-        </Card>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <div style={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#dc2626' }}>
+            {debugData.errorLogs.length}
+          </div>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#666' }}>Error Logs</p>
+        </div>
         
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-blue-600">
-              {debugData.debugLogs.length}
-            </div>
-            <p className="text-sm text-gray-600">Debug Logs</p>
-          </CardContent>
-        </Card>
+        <div style={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#2563eb' }}>
+            {debugData.debugLogs.length}
+          </div>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#666' }}>Debug Logs</p>
+        </div>
         
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-green-600">
-              {debugData.plugins.length}
-            </div>
-            <p className="text-sm text-gray-600">Plugins</p>
-          </CardContent>
-        </Card>
+        <div style={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px', textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#16a34a' }}>
+            {debugData.plugins.length}
+          </div>
+          <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#666' }}>Plugins</p>
+        </div>
       </div>
 
       {debugData.performanceMetrics && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Performance Metrics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Page Load Time:</span>
-                <Badge variant={debugData.performanceMetrics.pageLoadTime > 2 ? 'destructive' : 'default'}>
-                  {debugData.performanceMetrics.pageLoadTime.toFixed(2)}s
-                </Badge>
-              </div>
-              <div className="flex justify-between">
-                <span>Memory Usage:</span>
-                <span>{(debugData.performanceMetrics.memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB</span>
-              </div>
+        <div style={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
+          <h3 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600' }}>Performance Metrics</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Page Load Time:</span>
+              <span style={{ 
+                padding: '2px 8px', 
+                borderRadius: '4px', 
+                backgroundColor: debugData.performanceMetrics.pageLoadTime > 2 ? '#fef2f2' : '#f0f9ff',
+                color: debugData.performanceMetrics.pageLoadTime > 2 ? '#dc2626' : '#2563eb'
+              }}>
+                {debugData.performanceMetrics.pageLoadTime.toFixed(2)}s
+              </span>
             </div>
-          </CardContent>
-        </Card>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Memory Usage:</span>
+              <span>{(debugData.performanceMetrics.memoryUsage.heapUsed / 1024 / 1024).toFixed(2)} MB</span>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
 
   const renderErrorLogs = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Error Logs</h3>
-        <Button 
-          variant="outline" 
-          size="sm"
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Error Logs</h3>
+        <button 
+          style={{ 
+            padding: '8px 16px', 
+            border: '1px solid #d1d5db', 
+            borderRadius: '6px', 
+            backgroundColor: 'white',
+            cursor: 'pointer'
+          }}
           onClick={() => clearLogs('error')}
         >
           Clear Logs
-        </Button>
+        </button>
       </div>
       
       {debugData.errorLogs.length === 0 ? (
-        <Alert>
-          <p>No error logs found for this site.</p>
-        </Alert>
+        <div style={{ padding: '16px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+          <p style={{ margin: 0, color: '#6b7280' }}>No error logs found for this site.</p>
+        </div>
       ) : (
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {debugData.errorLogs.map((log, index) => (
-            <div key={index} className="p-3 bg-gray-50 rounded border">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="text-sm text-gray-600 mb-1">
+            <div key={index} style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>
                     {log.timestamp}
                   </div>
-                  <div className="text-sm font-mono">
+                  <div style={{ fontSize: '14px', fontFamily: 'monospace' }}>
                     {log.message}
                   </div>
                 </div>
-                <Badge 
-                  variant={log.level === 'error' ? 'destructive' : log.level === 'warning' ? 'secondary' : 'default'}
-                >
+                <span style={{ 
+                  padding: '2px 8px', 
+                  borderRadius: '4px', 
+                  fontSize: '12px',
+                  backgroundColor: log.level === 'error' ? '#fef2f2' : log.level === 'warning' ? '#fffbeb' : '#f0f9ff',
+                  color: log.level === 'error' ? '#dc2626' : log.level === 'warning' ? '#d97706' : '#2563eb'
+                }}>
                   {log.level}
-                </Badge>
+                </span>
               </div>
             </div>
           ))}
@@ -205,30 +199,35 @@ const LocalDebugPanel = ({ site, addonSlug }) => {
   );
 
   const renderDebugLogs = () => (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Debug Logs</h3>
-        <Button 
-          variant="outline" 
-          size="sm"
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Debug Logs</h3>
+        <button 
+          style={{ 
+            padding: '8px 16px', 
+            border: '1px solid #d1d5db', 
+            borderRadius: '6px', 
+            backgroundColor: 'white',
+            cursor: 'pointer'
+          }}
           onClick={() => clearLogs('debug')}
         >
           Clear Logs
-        </Button>
+        </button>
       </div>
       
       {debugData.debugLogs.length === 0 ? (
-        <Alert>
-          <p>No debug logs found for this site.</p>
-        </Alert>
+        <div style={{ padding: '16px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+          <p style={{ margin: 0, color: '#6b7280' }}>No debug logs found for this site.</p>
+        </div>
       ) : (
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        <div style={{ maxHeight: '400px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {debugData.debugLogs.map((log, index) => (
-            <div key={index} className="p-3 bg-gray-50 rounded border">
-              <div className="text-sm text-gray-600 mb-1">
+            <div key={index} style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+              <div style={{ fontSize: '14px', color: '#6b7280', marginBottom: '4px' }}>
                 {log.timestamp}
               </div>
-              <div className="text-sm font-mono">
+              <div style={{ fontSize: '14px', fontFamily: 'monospace' }}>
                 {log.message}
               </div>
             </div>
@@ -239,25 +238,31 @@ const LocalDebugPanel = ({ site, addonSlug }) => {
   );
 
   const renderPlugins = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Plugin Analysis</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Plugin Analysis</h3>
       
       {debugData.plugins.length === 0 ? (
-        <Alert>
-          <p>No plugins found for this site.</p>
-        </Alert>
+        <div style={{ padding: '16px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+          <p style={{ margin: 0, color: '#6b7280' }}>No plugins found for this site.</p>
+        </div>
       ) : (
-        <div className="space-y-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           {debugData.plugins.map((plugin, index) => (
-            <div key={index} className="p-3 bg-gray-50 rounded border">
-              <div className="flex justify-between items-center">
+            <div key={index} style={{ padding: '12px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
-                  <div className="font-medium">{plugin.name}</div>
-                  <div className="text-sm text-gray-600">{plugin.path}</div>
+                  <div style={{ fontWeight: '500' }}>{plugin.name}</div>
+                  <div style={{ fontSize: '14px', color: '#6b7280' }}>{plugin.path}</div>
                 </div>
-                <Badge variant={plugin.active ? 'default' : 'secondary'}>
+                <span style={{ 
+                  padding: '2px 8px', 
+                  borderRadius: '4px', 
+                  fontSize: '12px',
+                  backgroundColor: plugin.active ? '#f0f9ff' : '#f9fafb',
+                  color: plugin.active ? '#2563eb' : '#6b7280'
+                }}>
                   {plugin.active ? 'Active' : 'Inactive'}
-                </Badge>
+                </span>
               </div>
             </div>
           ))}
@@ -267,86 +272,118 @@ const LocalDebugPanel = ({ site, addonSlug }) => {
   );
 
   const renderDatabase = () => (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Database Explorer</h3>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Database Explorer</h3>
       
       {debugData.databaseInfo ? (
-        <div className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Database Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span>Database Name:</span>
-                  <span className="font-mono">{debugData.databaseInfo.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Tables:</span>
-                  <span>{debugData.databaseInfo.tableCount}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Size:</span>
-                  <span>{debugData.databaseInfo.size}</span>
-                </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ padding: '16px', border: '1px solid #e0e0e0', borderRadius: '8px' }}>
+            <h4 style={{ margin: '0 0 16px 0', fontSize: '16px', fontWeight: '600' }}>Database Information</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Database Name:</span>
+                <span style={{ fontFamily: 'monospace' }}>{debugData.databaseInfo.name}</span>
               </div>
-            </CardContent>
-          </Card>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Tables:</span>
+                <span>{debugData.databaseInfo.tableCount}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>Size:</span>
+                <span>{debugData.databaseInfo.size}</span>
+              </div>
+            </div>
+          </div>
         </div>
       ) : (
-        <Alert>
-          <p>Database information not available.</p>
-        </Alert>
+        <div style={{ padding: '16px', backgroundColor: '#f9fafb', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
+          <p style={{ margin: 0, color: '#6b7280' }}>Database information not available.</p>
+        </div>
       )}
     </div>
   );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Spinner size="lg" />
-        <span className="ml-2">Loading debug data...</span>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px' }}>
+        <div style={{ marginRight: '8px' }}>Loading...</div>
+        <div style={{ width: '20px', height: '20px', border: '2px solid #e5e7eb', borderTop: '2px solid #2563eb', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold">Debug Tools</h2>
-        <p className="text-gray-600">Debugging tools for {site?.name || 'this site'}</p>
+    <div style={{ padding: '24px' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 'bold' }}>Debug Tools</h2>
+        <p style={{ margin: 0, color: '#6b7280' }}>Debugging tools for {site?.name || 'this site'}</p>
       </div>
 
       {error && (
-        <Alert variant="destructive" className="mb-4">
-          <p>{error}</p>
-        </Alert>
+        <div style={{ 
+          padding: '16px', 
+          backgroundColor: '#fef2f2', 
+          border: '1px solid #fecaca', 
+          borderRadius: '6px', 
+          marginBottom: '16px' 
+        }}>
+          <p style={{ margin: 0, color: '#dc2626' }}>{error}</p>
+        </div>
       )}
 
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="flex space-x-1 mb-4">
-          <Tab value="overview">Overview</Tab>
-          <Tab value="errors">Error Logs</Tab>
-          <Tab value="debug">Debug Logs</Tab>
-          <Tab value="plugins">Plugins</Tab>
-          <Tab value="database">Database</Tab>
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb' }}>
+          {['overview', 'errors', 'debug', 'plugins', 'database'].map((tab) => (
+            <button
+              key={tab}
+              style={{
+                padding: '12px 16px',
+                border: 'none',
+                backgroundColor: 'transparent',
+                cursor: 'pointer',
+                borderBottom: activeTab === tab ? '2px solid #2563eb' : '2px solid transparent',
+                color: activeTab === tab ? '#2563eb' : '#6b7280',
+                textTransform: 'capitalize'
+              }}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
-
-        <div className="mt-4">
-          {activeTab === 'overview' && renderOverview()}
-          {activeTab === 'errors' && renderErrorLogs()}
-          {activeTab === 'debug' && renderDebugLogs()}
-          {activeTab === 'plugins' && renderPlugins()}
-          {activeTab === 'database' && renderDatabase()}
-        </div>
-      </Tabs>
-
-      <div className="mt-6 flex justify-end">
-        <Button onClick={loadDebugData} disabled={loading}>
-          {loading ? 'Refreshing...' : 'Refresh Data'}
-        </Button>
       </div>
+
+      <div>
+        {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'errors' && renderErrorLogs()}
+        {activeTab === 'debug' && renderDebugLogs()}
+        {activeTab === 'plugins' && renderPlugins()}
+        {activeTab === 'database' && renderDatabase()}
+      </div>
+
+      <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end' }}>
+        <button 
+          style={{ 
+            padding: '8px 16px', 
+            backgroundColor: '#2563eb', 
+            color: 'white', 
+            border: 'none', 
+            borderRadius: '6px', 
+            cursor: 'pointer' 
+          }}
+          onClick={loadDebugData}
+          disabled={loading}
+        >
+          {loading ? 'Refreshing...' : 'Refresh Data'}
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
