@@ -18,15 +18,7 @@
     "tools"
   ],
   "dependencies": {
-    "@local/addon-api": "^1.0.0"
-  },
-  "local": {
-    "hooks": [
-      "siteInfoToolsItem",
-      "addonComponents"
-    ],
-    "components": [
-      "LocalDebugPanel"
-    ]
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   }
 }
