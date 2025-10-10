@@ -1,0 +1,11 @@
+{
+  "name": "Local Debug",
+  "slug": "local-debug",
+  "version": "1.0.0",
+  "description": "Enhanced debugging tools for WordPress development in Local by Flywheel",
+  "author": "Local Debug Team",
+  "main": "index.js",
+  "engines": {
+    "local": ">=6.0.0"
+  }
+}
