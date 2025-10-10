@@ -52,6 +52,12 @@ class LocalDebugAddon {
       return toolsItems;
     });
 
+    // Register the React component with Local's component registry
+    hooks.addFilter('addonComponents', (components) => {
+      components['LocalDebugPanel'] = require('./src/components/LocalDebugPanel.jsx').default;
+      return components;
+    });
+
     console.log('Registered Debug panel in Tools tab');
   }
 
@@ -225,14 +231,14 @@ class LocalDebugAddon {
   /**
    * Get error logs for a site
    */
-  getErrorLogs(event, siteId) {
-    if (!this.currentSite) {
-      event.reply('error-logs-response', { error: 'No site selected' });
-      return;
-    }
-
+  async getErrorLogs(siteId) {
     try {
-      const errorLogPath = path.join(this.currentSite.path, 'logs', 'php', 'error.log');
+      const site = await this.getSiteData(siteId);
+      if (!site) {
+        return { error: 'Site not found' };
+      }
+
+      const errorLogPath = path.join(site.path, 'logs', 'php', 'error.log');
       
       if (fs.existsSync(errorLogPath)) {
         const logs = fs.readFileSync(errorLogPath, 'utf8');
@@ -245,12 +251,12 @@ class LocalDebugAddon {
           };
         });
         
-        event.reply('error-logs-response', { logs: logEntries });
+        return { logs: logEntries };
       } else {
-        event.reply('error-logs-response', { logs: [], message: 'No error log found' });
+        return { logs: [], message: 'No error log found' };
       }
     } catch (error) {
-      event.reply('error-logs-response', { error: error.message });
+      return { error: error.message };
     }
   }
 

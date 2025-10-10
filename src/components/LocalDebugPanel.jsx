@@ -1,16 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent,
-  Button,
-  Tabs,
-  Tab,
-  Alert,
-  Spinner,
-  Badge
-} from '@local/components';
 
 const LocalDebugPanel = ({ site, addonSlug }) => {
   const [activeTab, setActiveTab] = useState('overview');
