@@ -1,0 +1,17 @@
+{
+  "name": "local-debug",
+  "version": "1.0.0",
+  "description": "A Local by Flywheel add-on for debugging WordPress sites",
+  "main": "index.js",
+  "author": "Local Debug Add-on",
+  "license": "MIT",
+  "keywords": ["local", "flywheel", "wordpress", "debug", "development"],
+  "engines": {
+    "node": ">=12.0.0",
+    "local": ">=6.0.0"
+  },
+  "dependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  }
+}

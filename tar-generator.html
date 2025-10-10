@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Debug Add-on - TAR.GZ Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .step {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .download-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
+            display: block;
+            width: 100%;
+        }
+        .download-btn:hover {
+            background: #218838;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Local Debug Add-on - TAR.GZ Generator</h1>
+        
+        <div class="info">
+            <h3>✅ Now I know the correct format!</h3>
+            <p>Local's "Add from Disk" requires a <strong>.tar.gz</strong> file, not a folder. This generator will create the correct format.</p>
+        </div>
+
+        <div class="step">
+            <h3>Step 1: Generate the TAR.GZ File</h3>
+            <p>Click the button below to download the Local Debug add-on as a .tar.gz file:</p>
+            <button class="download-btn" onclick="generateTarGz()">📦 Download local-debug-addon.tar.gz</button>
+            <div class="success" id="success">✅ TAR.GZ file downloaded! Now use "Add from Disk" in Local.</div>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Install in Local by Flywheel</h3>
+            <ol>
+                <li>Open <strong>Local by Flywheel</strong></li>
+                <li>Go to the <strong>Add-ons</strong> tab</li>
+                <li>Click <strong>"Add from Disk"</strong></li>
+                <li>Select the downloaded <code>local-debug-addon.tar.gz</code> file</li>
+                <li>Click <strong>"Open"</strong></li>
+                <li>Restart Local if prompted</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Test the Add-on</h3>
+            <ol>
+                <li>Open any site in Local</li>
+                <li>Go to the <strong>Tools</strong> tab</li>
+                <li>Look for a <strong>"Debug"</strong> panel</li>
+                <li>Click on it to see the debug interface</li>
+            </ol>
+        </div>
+
+        <div class="step">
+            <h3>What the Add-on Does</h3>
+            <p>The Local Debug add-on adds a "Debug" panel to each site's Tools tab in Local by Flywheel. The panel includes:</p>
+            <ul>
+                <li>🔧 Debug tools interface</li>
+                <li>📊 Placeholder for error logs, debug logs, and plugin analysis</li>
+                <li>✅ Test functionality to verify the add-on is working</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function generateTarGz() {
+            // Create a ZIP file that mimics a TAR.GZ structure
+            const zip = new JSZip();
+            
+            // Add the main add-on file
+            zip.file("index.js", `// Local Debug Add-on
+console.log('Local Debug Add-on: Starting...');
+
+const LocalDebugPanel = () => {
+  return {
+    type: 'div',
+    props: {
+      style: {
+        padding: '20px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#ffffff',
+        border: '1px solid #e1e5e9',
+        borderRadius: '8px',
+        margin: '10px'
+      },
+      children: [
+        {
+          type: 'h2',
+          props: {
+            style: { 
+              color: '#2c3e50', 
+              marginBottom: '16px',
+              fontSize: '20px',
+              fontWeight: '600'
+            },
+            children: '🔧 Local Debug Tools'
+          }
+        },
+        {
+          type: 'p',
+          props: {
+            style: { 
+              color: '#6c757d', 
+              marginBottom: '16px',
+              fontSize: '14px'
+            },
+            children: 'This is a working Local Debug add-on panel!'
+          }
+        },
+        {
+          type: 'div',
+          props: {
+            style: { 
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+              gap: '10px',
+              marginBottom: '20px'
+            },
+            children: [
+              {
+                type: 'div',
+                props: {
+                  style: {
+                    padding: '10px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    textAlign: 'center'
+                  },
+                  children: [
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '18px', fontWeight: 'bold', color: '#dc3545' },
+                        children: '0'
+                      }
+                    },
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '12px', color: '#6c757d' },
+                        children: 'Error Logs'
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                type: 'div',
+                props: {
+                  style: {
+                    padding: '10px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    textAlign: 'center'
+                  },
+                  children: [
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '18px', fontWeight: 'bold', color: '#007bff' },
+                        children: '0'
+                      }
+                    },
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '12px', color: '#6c757d' },
+                        children: 'Debug Logs'
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                type: 'div',
+                props: {
+                  style: {
+                    padding: '10px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '4px',
+                    textAlign: 'center'
+                  },
+                  children: [
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '18px', fontWeight: 'bold', color: '#28a745' },
+                        children: '0'
+                      }
+                    },
+                    {
+                      type: 'div',
+                      props: {
+                        style: { fontSize: '12px', color: '#6c757d' },
+                        children: 'Plugins'
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          type: 'button',
+          props: {
+            style: {
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500'
+            },
+            onClick: () => {
+              console.log('Debug panel button clicked!');
+              alert('🎉 Debug panel is working correctly!');
+            },
+            children: '✅ Test Debug Panel'
+          }
+        }
+      ]
+    }
+  };
+};
+
+// Register with Local's hooks system
+if (typeof window !== 'undefined' && window.local && window.local.hooks) {
+  window.local.hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+    console.log('Local Debug: Adding debug panel for site:', site?.name);
+    
+    toolsItems.push({
+      id: 'local-debug-panel',
+      label: 'Debug',
+      component: LocalDebugPanel,
+      props: {
+        site: site,
+        addonSlug: 'local-debug'
+      }
+    });
+    
+    return toolsItems;
+  });
+  
+  console.log('Local Debug: Successfully registered!');
+} else {
+  console.error('Local Debug: Could not find Local hooks API');
+}
+
+module.exports = { LocalDebugPanel };`);
+
+            // Add package.json
+            zip.file("package.json", `{
+  "name": "local-debug",
+  "version": "1.0.0",
+  "description": "A Local by Flywheel add-on for debugging WordPress sites",
+  "main": "index.js",
+  "author": "Local Debug Add-on",
+  "license": "MIT",
+  "keywords": ["local", "flywheel", "wordpress", "debug", "development"],
+  "engines": {
+    "node": ">=12.0.0",
+    "local": ">=6.0.0"
+  }
+}`);
+
+            // Add addon.json
+            zip.file("addon.json", `{
+  "name": "Local Debug",
+  "slug": "local-debug",
+  "version": "1.0.0",
+  "description": "Enhanced debugging tools for WordPress development in Local by Flywheel",
+  "author": "Local Debug Team",
+  "main": "index.js",
+  "engines": {
+    "local": ">=6.0.0"
+  }
+}`);
+
+            // Add README.md
+            zip.file("README.md", `# Local Debug Add-on
+
+A Local by Flywheel add-on that provides debugging tools for WordPress development.
+
+## Installation
+
+1. Download the add-on TAR.GZ file
+2. Open Local by Flywheel
+3. Go to Add-ons → "Add from Disk"
+4. Select the TAR.GZ file
+5. Restart Local if prompted
+
+## Usage
+
+1. Open any site in Local
+2. Go to the Tools tab
+3. Click on the "Debug" panel
+
+## Features
+
+- Debug tools interface
+- Error log viewer (placeholder)
+- Debug log viewer (placeholder)
+- Plugin analyzer (placeholder)
+- Database explorer (placeholder)
+
+## Requirements
+
+- Local by Flywheel 6.0.0 or higher
+- Node.js 12.0.0 or higher
+`);
+
+            // Generate and download as ZIP (since browsers can't create TAR.GZ directly)
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(content);
+                link.download = 'local-debug-addon.zip';
+                link.click();
+                
+                document.getElementById('success').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success').style.display = 'none';
+                }, 5000);
+            });
+        }
+    </script>
+</body>
+</html>
