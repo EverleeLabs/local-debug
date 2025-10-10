@@ -1,10 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { hooks } = require('@local/addon-api');
 const path = require('path');
 const fs = require('fs');
 
 class LocalDebugAddon {
   constructor() {
-    this.mainWindow = null;
+    this.addonSlug = 'local-debug';
     this.debugTools = new Map();
     this.isInitialized = false;
   }
@@ -16,8 +16,8 @@ class LocalDebugAddon {
     try {
       console.log('Initializing Local Debug add-on...');
       
-      // Set up event listeners
-      this.setupEventListeners();
+      // Register the Tools tab item using content hooks
+      this.registerToolsTabItem();
       
       // Initialize debug tools
       await this.initializeDebugTools();
@@ -33,32 +33,67 @@ class LocalDebugAddon {
   }
 
   /**
+   * Register the Debug panel in the Tools tab using content hooks
+   */
+  registerToolsTabItem() {
+    // Add a new menu item and panel under each site's Tools section
+    hooks.addFilter('siteInfoToolsItem', (toolsItems, site) => {
+      // Add the Debug panel to the tools items
+      toolsItems.push({
+        id: `${this.addonSlug}-debug-panel`,
+        label: 'Debug',
+        component: 'LocalDebugPanel',
+        props: {
+          site: site,
+          addonSlug: this.addonSlug
+        }
+      });
+      
+      return toolsItems;
+    });
+
+    console.log('Registered Debug panel in Tools tab');
+  }
+
+  /**
    * Set up IPC event listeners for communication with Local
    */
   setupEventListeners() {
-    // Listen for site selection changes
-    ipcMain.on('site-selected', (event, siteData) => {
-      this.handleSiteSelection(siteData);
-    });
-
-    // Listen for debug tool requests
-    ipcMain.on('debug-tool-request', (event, toolName, options) => {
-      this.handleDebugToolRequest(event, toolName, options);
-    });
-
+    const { ipcMain } = require('electron');
+    
     // Listen for log requests
-    ipcMain.on('get-debug-logs', (event, siteId) => {
-      this.getDebugLogs(event, siteId);
+    ipcMain.handle('get-debug-logs', async (event, siteId) => {
+      return this.getDebugLogs(siteId);
     });
 
     // Listen for error log requests
-    ipcMain.on('get-error-logs', (event, siteId) => {
-      this.getErrorLogs(event, siteId);
+    ipcMain.handle('get-error-logs', async (event, siteId) => {
+      return this.getErrorLogs(siteId);
+    });
+
+    // Listen for performance metrics requests
+    ipcMain.handle('get-performance-metrics', async (event, siteId) => {
+      return this.getPerformanceMetrics(siteId);
+    });
+
+    // Listen for plugin analysis requests
+    ipcMain.handle('analyze-plugins', async (event, siteId) => {
+      return this.analyzePlugins(siteId);
+    });
+
+    // Listen for database info requests
+    ipcMain.handle('get-database-info', async (event, siteId) => {
+      return this.getDatabaseInfo(siteId);
     });
 
     // Listen for database query requests
-    ipcMain.on('execute-db-query', (event, siteId, query) => {
-      this.executeDatabaseQuery(event, siteId, query);
+    ipcMain.handle('execute-db-query', async (event, siteId, query) => {
+      return this.executeDatabaseQuery(siteId, query);
+    });
+
+    // Listen for log clearing requests
+    ipcMain.handle('clear-logs', async (event, siteId, logType) => {
+      return this.clearLogs(siteId, logType);
     });
   }
 
@@ -158,14 +193,15 @@ class LocalDebugAddon {
   /**
    * Get debug logs for a site
    */
-  getDebugLogs(event, siteId) {
-    if (!this.currentSite) {
-      event.reply('debug-logs-response', { error: 'No site selected' });
-      return;
-    }
-
+  async getDebugLogs(siteId) {
     try {
-      const debugLogPath = path.join(this.currentSite.path, 'app', 'public', 'wp-content', 'debug.log');
+      // Get site data from Local's site manager
+      const site = await this.getSiteData(siteId);
+      if (!site) {
+        return { error: 'Site not found' };
+      }
+
+      const debugLogPath = path.join(site.path, 'app', 'public', 'wp-content', 'debug.log');
       
       if (fs.existsSync(debugLogPath)) {
         const logs = fs.readFileSync(debugLogPath, 'utf8');
@@ -177,12 +213,12 @@ class LocalDebugAddon {
           };
         });
         
-        event.reply('debug-logs-response', { logs: logEntries });
+        return { logs: logEntries };
       } else {
-        event.reply('debug-logs-response', { logs: [], message: 'No debug log found' });
+        return { logs: [], message: 'No debug log found' };
       }
     } catch (error) {
-      event.reply('debug-logs-response', { error: error.message });
+      return { error: error.message };
     }
   }
 
