@@ -1,59 +1,109 @@
-# Local Boilerplate Add-on
+# WP Debug Toggler
 
-https://build.localwp.com/
+A Local by WP Engine add-on that allows you to easily toggle WordPress debug settings (`WP_DEBUG`, `WP_DEBUG_LOG`, and `WP_DEBUG_DISPLAY`) directly from the Local Tools tab.
 
-## Get Started with the Local Add-on Generator
+## Features
 
-Get up and running with your new add-on quickly and easily with the [Local Add-on Generator](https://github.com/getflywheel/create-local-addon). It is super simple to set up, and can help you start developing your new add-on in no time!
-
-The generator uses this boilerplate add-on to get you started, making setup easy and fast. The README for the generator also has more information on how to create an amazing add-on for Local, so be sure to check it out!
+- ✅ Toggle `WP_DEBUG` on/off
+- ✅ Toggle `WP_DEBUG_LOG` (only visible when `WP_DEBUG` is enabled)
+- ✅ Toggle `WP_DEBUG_DISPLAY` (only visible when `WP_DEBUG` is enabled)
+- ✅ Automatically reads current debug settings from `wp-config.php`
+- ✅ Safely updates `wp-config.php` with proper backups
+- ✅ Notifications when settings are saved
 
 ## Installation
 
-### Clone
+### Prerequisites
 
-Clone the repository into the following directory depending on your platform:
+- [Local by WP Engine](https://localwp.com/) installed and running
+- Node.js and Yarn (or npm) installed
 
--   macOS: `~/Library/Application Support/Local/addons`
--   Windows: `C:\Users\username\AppData\Roaming\Local\addons`
--   Debian Linux: `~/.config/Local/addons`
+### Steps
 
-*You can replace 'Local' with 'Local Beta' if you want to create the add-on for Local Beta.*
+1. **Clone or download this repository** into your Local add-ons directory:
 
-### Install Add-on Dependencies
+   - **macOS**: `~/Library/Application Support/Local/addons`
+   - **Windows**: `C:\Users\username\AppData\Roaming\Local\addons`
+   - **Linux**: `~/.config/Local/addons`
 
-`yarn install`
+   *Note: Replace 'Local' with 'Local Beta' if you're using Local Beta.*
 
-### Add Add-on to Local
+2. **Install dependencies**:
+   ```bash
+   yarn install
+   # or
+   npm install
+   ```
 
-1. Clone repo directly into the add-ons folder (paths described above)
-2. `yarn install` (install dependencies)
-2. `yarn build`
-3. Open Local and enable add-on
+3. **Build the add-on**:
+   ```bash
+   yarn build
+   # or
+   npm run build
+   ```
+
+4. **Enable the add-on in Local**:
+   - Open Local by WP Engine
+   - Go to Settings → Add-ons
+   - Find "WP Debug Toggler" and enable it
+
+## Usage
+
+1. Open Local and select a WordPress site
+2. Navigate to the **Tools** tab in the site dashboard
+3. Click on **"WP Debug"** in the Tools menu
+4. Use the checkboxes to toggle debug settings:
+   - Check **WP_DEBUG** to enable debug mode
+   - When WP_DEBUG is enabled, you'll see two additional options:
+     - **WP_DEBUG_LOG**: Logs errors to `wp-content/debug.log`
+     - **WP_DEBUG_DISPLAY**: Displays errors on the frontend
+
+## How It Works
+
+The add-on:
+- Reads your `wp-config.php` file to detect current debug settings
+- Safely updates the debug constants while preserving other configuration
+- Creates a backup file (`wp-config.php.wpdebug.bak`) before making changes
+- Updates the settings in real-time as you toggle the checkboxes
 
 ## Development
 
+### Building for Development
+
+Use the watch mode for automatic rebuilding during development:
+
+```bash
+yarn watch
+# or
+npm run watch
+```
+
+### Project Structure
+
+```
+wp-debug-toggler/
+├── src/
+│   ├── main.ts          # Main process (handles wp-config.php operations)
+│   └── renderer.jsx     # UI component (Tools tab panel)
+├── lib/                 # Compiled output (auto-generated)
+├── package.json
+├── webpack.config.js
+└── tsconfig.json
+```
+
 ### External Libraries
 
-- @getflywheel/local provides type definitions for Local's Add-on API.
-	- Node Module: https://www.npmjs.com/package/@getflywheel/local-components
-	- GitHub Repo: https://github.com/getflywheel/local-components
+- `@getflywheel/local-components`: React components for Local add-ons (provided by Local at runtime)
+- `@getflywheel/local`: Local add-on API (provided by Local at runtime)
 
-- @getflywheel/local-components provides reusable React components to use in your Local add-on.
-	- Node Module: https://www.npmjs.com/package/@getflywheel/local
-	- GitHub Repo: https://github.com/getflywheel/local-addon-api
-	- Style Guide: https://getflywheel.github.io/local-components
-
-### Folder Structure
-
-All files in `/src` will be transpiled to `/lib` using [TypeScript](https://www.typescriptlang.org/). Anything in `/lib` will be overwritten.
-
-### Development Workflow
-
-If you are looking for help getting started, you can consult [the documentation for the add-on generator](https://github.com/getflywheel/create-local-addon#next-steps).
-
-You can consult the [Local add-on API](https://getflywheel.github.io/local-addon-api), which provides a wide range of values and functions for developing your add-on.
+For more information on developing Local add-ons, visit:
+- [Local Add-on API Documentation](https://getflywheel.github.io/local-addon-api)
+- [Local Components Style Guide](https://getflywheel.github.io/local-components)
 
 ## License
 
 MIT
+
+## Author
+
+Everlee Labs
