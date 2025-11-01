@@ -1,0 +1,30 @@
+{
+  "name": "wp-debug-toggler",
+  "productName": "WP Debug Toggler",
+  "version": "1.0.0",
+  "author": "Local Community",
+  "keywords": [
+    "local-addon"
+  ],
+  "bgColor": "#0073aa",
+  "icon": "icon.svg",
+  "slug": "wp-debug-toggler",
+  "description": "Toggle WordPress debug settings (WP_DEBUG, WP_DEBUG_LOG, WP_DEBUG_DISPLAY) from Local",
+  "renderer": "lib/renderer.js",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop && webpack --config webpack.config.js",
+    "watch": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop --watch & webpack --config webpack.config.js --watch"
+  },
+  "devDependencies": {
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0",
+    "babel-loader": "^9.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "typescript": "^5.0.0",
+    "ts-loader": "^9.5.0"
+  },
+  "license": "MIT"
+}
