@@ -17,14 +17,15 @@
     "watch": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop --watch & webpack --config webpack.config.js --watch"
   },
   "devDependencies": {
-    "webpack": "^5.0.0",
-    "webpack-cli": "^5.0.0",
-    "babel-loader": "^9.0.0",
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
+    "@getflywheel/local-components": "^17.8.1",
+    "babel-loader": "^9.0.0",
+    "ts-loader": "^9.5.0",
     "typescript": "^5.0.0",
-    "ts-loader": "^9.5.0"
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0"
   },
   "license": "MIT"
 }

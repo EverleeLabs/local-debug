@@ -1,5 +1,49 @@
 const addonID = 'wp-debug-toggler';
 
+// Try ES6 import at top level - webpack externals work best with imports
+// We'll use a function wrapper to make it safe
+let LocalComponentsModule = null;
+
+// Function to safely get Local Components
+// This will be called inside the export function where webpack externals are available
+const getLocalComponents = () => {
+	if (LocalComponentsModule !== null) {
+		return LocalComponentsModule;
+	}
+	
+	// Try multiple ways to access Local Components
+	try {
+		// Method 1: Try require (webpack external)
+		const components = require('@getflywheel/local-components');
+		LocalComponentsModule = {
+			Toggle: components.Toggle || components.ToggleSwitch || components.Switch,
+			Text: components.Text,
+			available: !!(components.Toggle || components.ToggleSwitch || components.Switch) && !!components.Text
+		};
+		return LocalComponentsModule;
+	} catch (e1) {
+		// Method 2: Try global/window access
+		try {
+			if (typeof window !== 'undefined' && window.LocalComponents) {
+				const components = window.LocalComponents;
+				LocalComponentsModule = {
+					Toggle: components.Toggle || components.ToggleSwitch || components.Switch,
+					Text: components.Text,
+					available: !!(components.Toggle || components.ToggleSwitch || components.Switch) && !!components.Text
+				};
+				console.log('WP Debug Toggler: Local Components loaded via window');
+				return LocalComponentsModule;
+			}
+		} catch (e2) {
+			// Ignore
+		}
+		
+		// Not available - use fallback
+		LocalComponentsModule = { Toggle: null, Text: null, available: false };
+		return LocalComponentsModule;
+	}
+};
+
 export default function (context) {
 	const { React, hooks, notifier, electron } = context;
 	const { useState, useEffect, createElement } = React;
@@ -9,16 +53,18 @@ export default function (context) {
 	const ReactForJSX = React;
 
 	const TestPanel = (props) => {
-		const ipc = electron.ipcRenderer;
+		// Get Local Components (lazy-loaded, cached)
+		const localComponents = getLocalComponents();
+	const ipc = electron.ipcRenderer;
 		const site = props.site;
 		const [WP_DEBUG, setWP_DEBUG] = useState(false);
 		const [WP_DEBUG_LOG, setWP_DEBUG_LOG] = useState(false);
 		const [WP_DEBUG_DISPLAY, setWP_DEBUG_DISPLAY] = useState(false);
 
-		useEffect(() => {
-			if (!site) return;
+	useEffect(() => {
+	  if (!site) return;
 			ipc.invoke('wpdebug:getState', { sitePath: site.path })
-				.then((res) => {
+		.then((res) => {
 					setWP_DEBUG(res.WP_DEBUG || false);
 					setWP_DEBUG_LOG(res.WP_DEBUG_LOG || false);
 					setWP_DEBUG_DISPLAY(res.WP_DEBUG_DISPLAY || false);
@@ -66,22 +112,92 @@ export default function (context) {
 				});
 		};
 
-		const handleWP_DEBUGChange = (e) => {
-			const checked = e.target.checked;
+		const handleWP_DEBUGChange = (value) => {
+			// Handle both Toggle (boolean) and checkbox (event object)
+			let checked = false;
+			if (typeof value === 'boolean') {
+				checked = value;
+			} else if (value && typeof value === 'object' && value.target) {
+				checked = value.target.checked;
+			} else if (value === undefined || value === null) {
+				// Toggle might pass undefined, use current state's opposite
+				checked = !WP_DEBUG;
+			}
 			setWP_DEBUG(checked);
 			saveState({ WP_DEBUG: checked });
 		};
 
-		const handleWP_DEBUG_LOGChange = (e) => {
-			const checked = e.target.checked;
+		const handleWP_DEBUG_LOGChange = (value) => {
+			// Handle both Toggle (boolean) and checkbox (event object)
+			let checked = false;
+			if (typeof value === 'boolean') {
+				checked = value;
+			} else if (value && typeof value === 'object' && value.target) {
+				checked = value.target.checked;
+			} else if (value === undefined || value === null) {
+				checked = !WP_DEBUG_LOG;
+			}
 			setWP_DEBUG_LOG(checked);
 			saveState({ WP_DEBUG_LOG: checked });
 		};
 
-		const handleWP_DEBUG_DISPLAYChange = (e) => {
-			const checked = e.target.checked;
+		const handleWP_DEBUG_DISPLAYChange = (value) => {
+			// Handle both Toggle (boolean) and checkbox (event object)
+			let checked = false;
+			if (typeof value === 'boolean') {
+				checked = value;
+			} else if (value && typeof value === 'object' && value.target) {
+				checked = value.target.checked;
+			} else if (value === undefined || value === null) {
+				checked = !WP_DEBUG_DISPLAY;
+			}
 			setWP_DEBUG_DISPLAY(checked);
 			saveState({ WP_DEBUG_DISPLAY: checked });
+		};
+
+		// Render toggle or checkbox based on availability
+		const renderToggle = (checked, onChange, label, key) => {
+			if (localComponents.available && localComponents.Toggle && localComponents.Text) {
+				// Use Local Components Toggle
+				// Toggle component passes the new checked value (boolean) directly to onChange
+				const toggleOnChange = (newValue) => {
+					// newValue should be a boolean from Toggle component
+					// If undefined, toggle the current state
+					const finalValue = typeof newValue === 'boolean' ? newValue : !checked;
+					onChange(finalValue);
+				};
+				
+				return ReactForJSX.createElement('div', {
+					key: key,
+					style: { display: 'flex', alignItems: 'center', gap: 12 }
+				}, [
+					ReactForJSX.createElement(localComponents.Toggle, {
+						key: 'toggle',
+						checked: checked,
+						onChange: toggleOnChange
+					}),
+					ReactForJSX.createElement(localComponents.Text, {
+						key: 'label',
+						style: { marginLeft: 8 }
+					}, label)
+				]);
+			} else {
+				// Fall back to checkbox
+				return ReactForJSX.createElement('div', {
+					key: key,
+					style: { display: 'flex', alignItems: 'center', gap: 10 }
+				}, [
+					ReactForJSX.createElement('label', { key: 'label' }, [
+						ReactForJSX.createElement('input', {
+							key: 'checkbox',
+							type: 'checkbox',
+							checked: checked,
+							onChange: onChange
+						}),
+						ReactForJSX.createElement('span', { key: 'text', style: { marginLeft: 8 } }, label)
+					])
+				]);
+			}
 		};
 
 		return ReactForJSX.createElement('div', {
@@ -91,49 +207,20 @@ export default function (context) {
 		
 			ReactForJSX.createElement('div', {
 				key: 'toggles',
-				style: { marginTop: 20, display: 'flex', flexDirection: 'column', gap: 15 }
+				style: { marginTop: 20, display: 'flex', flexDirection: 'column', gap: 20 }
 			}, [
-				ReactForJSX.createElement('div', {
-					key: 'wp-debug',
-					style: { display: 'flex', alignItems: 'center', gap: 10 }
-				}, [
-					ReactForJSX.createElement('label', { key: 'label' }, [
-						ReactForJSX.createElement('input', {
-							key: 'checkbox',
-							type: 'checkbox',
-							checked: WP_DEBUG,
-							onChange: handleWP_DEBUGChange
-						}),
-						ReactForJSX.createElement('span', { key: 'text', style: { marginLeft: 8 } }, 'WP_DEBUG')
-					])
-				]),
+				renderToggle(WP_DEBUG, handleWP_DEBUGChange, 'WP_DEBUG', 'wp-debug'),
 				WP_DEBUG ? ReactForJSX.createElement('div', {
-					key: 'wp-debug-log',
-					style: { display: 'flex', alignItems: 'center', gap: 10, marginLeft: 20 }
+					key: 'wp-debug-log-wrapper',
+					style: { marginLeft: 20 }
 				}, [
-					ReactForJSX.createElement('label', { key: 'label' }, [
-						ReactForJSX.createElement('input', {
-							key: 'checkbox',
-							type: 'checkbox',
-							checked: WP_DEBUG_LOG,
-							onChange: handleWP_DEBUG_LOGChange
-						}),
-						ReactForJSX.createElement('span', { key: 'text', style: { marginLeft: 8 } }, 'WP_DEBUG_LOG')
-					])
+					renderToggle(WP_DEBUG_LOG, handleWP_DEBUG_LOGChange, 'WP_DEBUG_LOG', 'wp-debug-log')
 				]) : null,
 				WP_DEBUG ? ReactForJSX.createElement('div', {
-					key: 'wp-debug-display',
-					style: { display: 'flex', alignItems: 'center', gap: 10, marginLeft: 20 }
+					key: 'wp-debug-display-wrapper',
+					style: { marginLeft: 20 }
 				}, [
-					ReactForJSX.createElement('label', { key: 'label' }, [
-						ReactForJSX.createElement('input', {
-							key: 'checkbox',
-							type: 'checkbox',
-							checked: WP_DEBUG_DISPLAY,
-							onChange: handleWP_DEBUG_DISPLAYChange
-						}),
-						ReactForJSX.createElement('span', { key: 'text', style: { marginLeft: 8 } }, 'WP_DEBUG_DISPLAY')
-					])
+					renderToggle(WP_DEBUG_DISPLAY, handleWP_DEBUG_DISPLAYChange, 'WP_DEBUG_DISPLAY', 'wp-debug-display')
 				]) : null
 			].filter(Boolean))
 		]);
