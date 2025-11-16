@@ -11,6 +11,11 @@ A Local by WP Engine add-on that allows you to easily toggle WordPress debug set
 - ✅ Safely updates `wp-config.php` with proper backups
 - ✅ Notifications when settings are saved
 
+# Screenshot
+
+<img width="1364" height="1342" alt="image" src="https://github.com/user-attachments/assets/70b46958-c6d0-4cc0-b53e-7fa342c7c0cd" />
+
+
 ## Installation
 
 ### Prerequisites
