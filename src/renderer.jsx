@@ -18,6 +18,7 @@ const getLocalComponents = () => {
 		LocalComponentsModule = {
 			Toggle: components.Toggle || components.ToggleSwitch || components.Switch,
 			Text: components.Text,
+			Button: components.Button,
 			available: !!(components.Toggle || components.ToggleSwitch || components.Switch) && !!components.Text
 		};
 		return LocalComponentsModule;
@@ -29,6 +30,7 @@ const getLocalComponents = () => {
 				LocalComponentsModule = {
 					Toggle: components.Toggle || components.ToggleSwitch || components.Switch,
 					Text: components.Text,
+					Button: components.Button,
 					available: !!(components.Toggle || components.ToggleSwitch || components.Switch) && !!components.Text
 				};
 				console.log('WP Debug Toggler: Local Components loaded via window');
@@ -39,7 +41,7 @@ const getLocalComponents = () => {
 		}
 		
 		// Not available - use fallback
-		LocalComponentsModule = { Toggle: null, Text: null, available: false };
+		LocalComponentsModule = { Toggle: null, Text: null, Button: null, available: false };
 		return LocalComponentsModule;
 	}
 };
@@ -60,6 +62,8 @@ export default function (context) {
 		const [WP_DEBUG, setWP_DEBUG] = useState(false);
 		const [WP_DEBUG_LOG, setWP_DEBUG_LOG] = useState(false);
 		const [WP_DEBUG_DISPLAY, setWP_DEBUG_DISPLAY] = useState(false);
+		const [logContent, setLogContent] = useState('');
+		const [logLoading, setLogLoading] = useState(false);
 
 	useEffect(() => {
 	  if (!site) return;
@@ -72,8 +76,87 @@ export default function (context) {
 				.catch(() => {});
 		}, [site]);
 
+		// Load debug log when WP_DEBUG_LOG is enabled
+		useEffect(() => {
+			if (!site || !WP_DEBUG_LOG) {
+				setLogContent('');
+				return;
+			}
+			
+			setLogLoading(true);
+			const sitePath = site.path || site.rootPath || site.directory;
+			if (!sitePath) {
+				setLogLoading(false);
+				return;
+			}
+			
+			ipc.invoke('wpdebug:readLog', { sitePath: sitePath })
+				.then((content) => {
+					setLogContent(content || '');
+					setLogLoading(false);
+				})
+				.catch((err) => {
+					setLogContent(`Error loading log: ${err.message || 'Unknown error'}`);
+					setLogLoading(false);
+				});
+		}, [site, WP_DEBUG_LOG, ipc]);
+
+		// Function to manually refresh the log
+		const loadDebugLog = () => {
+			if (!site || !WP_DEBUG_LOG) {
+				setLogContent('');
+				return;
+			}
+			
+			setLogLoading(true);
+			const sitePath = site.path || site.rootPath || site.directory;
+			if (!sitePath) {
+				setLogLoading(false);
+				return;
+			}
+			
+			ipc.invoke('wpdebug:readLog', { sitePath: sitePath })
+				.then((content) => {
+					setLogContent(content || '');
+					setLogLoading(false);
+				})
+				.catch((err) => {
+					setLogContent(`Error loading log: ${err.message || 'Unknown error'}`);
+					setLogLoading(false);
+				});
+		};
+
+		// Open log file in Finder/Explorer
+		const openLogFile = () => {
+			if (!site) return;
+			const sitePath = site.path || site.rootPath || site.directory;
+			if (!sitePath) return;
+			
+			ipc.invoke('wpdebug:openLog', { sitePath: sitePath })
+				.catch((err) => {
+					notifier.notify({ title: 'WP Debug Error', message: `Failed to open log file: ${err.message || 'Unknown error'}` });
+				});
+		};
+
+		// Clear the debug log file
+		const clearLogFile = () => {
+			if (!site) return;
+			const sitePath = site.path || site.rootPath || site.directory;
+			if (!sitePath) return;
+			
+			ipc.invoke('wpdebug:clearLog', { sitePath: sitePath })
+				.then(() => {
+					// Refresh the log display after clearing
+					loadDebugLog();
+					notifier.notify({ title: 'WP Debug', message: 'Debug log cleared successfully' });
+				})
+				.catch((err) => {
+					notifier.notify({ title: 'WP Debug Error', message: `Failed to clear log file: ${err.message || 'Unknown error'}` });
+				});
+		};
+
 		const saveState = (newState) => {
-			if (!site) {
+	if (!site) {
 				notifier.notify({ title: 'WP Debug Error', message: 'Site path not found' });
 				return Promise.reject('No site');
 			}
@@ -221,6 +304,76 @@ export default function (context) {
 					style: { marginLeft: 20 }
 				}, [
 					renderToggle(WP_DEBUG_DISPLAY, handleWP_DEBUG_DISPLAYChange, 'WP_DEBUG_DISPLAY', 'wp-debug-display')
+				]) : null,
+				// Debug log viewer when WP_DEBUG_LOG is enabled
+				WP_DEBUG_LOG ? ReactForJSX.createElement('div', {
+					key: 'debug-log-viewer',
+					style: { marginTop: 30, marginLeft: 20 }
+				}, [
+					ReactForJSX.createElement('div', {
+						key: 'log-header',
+						style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }
+					}, [
+						localComponents.Text ? ReactForJSX.createElement(localComponents.Text, {
+							key: 'log-title',
+							style: { fontWeight: 'bold', fontSize: '14px' }
+						}, 'Debug Log') : ReactForJSX.createElement('h3', { key: 'log-title', style: { margin: 0, fontSize: '14px' } }, 'Debug Log'),
+						ReactForJSX.createElement('div', {
+							key: 'log-actions',
+							style: { display: 'flex', gap: 8 }
+						}, [
+							localComponents.Button ? ReactForJSX.createElement(localComponents.Button, {
+								key: 'refresh-btn',
+								onClick: loadDebugLog,
+								disabled: logLoading,
+								size: 'small'
+							}, logLoading ? 'Loading...' : 'Refresh') : ReactForJSX.createElement('button', {
+								key: 'refresh-btn',
+								onClick: loadDebugLog,
+								disabled: logLoading,
+								style: { padding: '6px 12px', fontSize: '12px', cursor: logLoading ? 'not-allowed' : 'pointer' }
+							}, logLoading ? 'Loading...' : 'Refresh'),
+							localComponents.Button ? ReactForJSX.createElement(localComponents.Button, {
+								key: 'clear-btn',
+								onClick: clearLogFile,
+								size: 'small',
+								variant: 'secondary'
+							}, 'Clear Log') : ReactForJSX.createElement('button', {
+								key: 'clear-btn',
+								onClick: clearLogFile,
+								style: { padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }
+							}, 'Clear Log'),
+							localComponents.Button ? ReactForJSX.createElement(localComponents.Button, {
+								key: 'open-btn',
+								onClick: openLogFile,
+								size: 'small',
+								variant: 'secondary'
+							}, 'Open File') : ReactForJSX.createElement('button', {
+								key: 'open-btn',
+								onClick: openLogFile,
+								style: { padding: '6px 12px', fontSize: '12px', cursor: 'pointer' }
+							}, 'Open File')
+						])
+					]),
+					ReactForJSX.createElement('textarea', {
+						key: 'log-content',
+						readOnly: true,
+						value: logContent || (logLoading ? 'Loading...' : 'No log entries yet.'),
+						style: {
+							width: '100%',
+							height: '300px',
+							fontFamily: 'monospace',
+							fontSize: '12px',
+							padding: '12px',
+							border: '1px solid #ddd',
+							borderRadius: '4px',
+							backgroundColor: '#f5f5f5',
+							resize: 'vertical',
+							overflowY: 'auto',
+							whiteSpace: 'pre',
+							wordWrap: 'off'
+						}
+					})
 				]) : null
 			].filter(Boolean))
 		]);

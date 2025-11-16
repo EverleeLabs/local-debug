@@ -157,6 +157,18 @@ function registerHandlers() {
     }
   });
 
+  ipcMain.handle('wpdebug:clearLog', (evt: any, { sitePath, logPath }: any) => {
+    const { defaultLogPath } = getPaths(sitePath);
+    const p = logPath || defaultLogPath;
+    try {
+      // Truncate the file by writing an empty string
+      fs.writeFileSync(p, '', 'utf8');
+      return true;
+    } catch (e: any) {
+      throw new Error(`Failed to clear log: ${e.message}`);
+    }
+  });
+
   console.log('WP Debug Toggler: All IPC handlers registered successfully at module load');
   try {
     const logPath = require('path').join(require('os').homedir(), 'wp-debug-toggler-main.log');
