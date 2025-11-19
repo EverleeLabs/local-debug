@@ -7,6 +7,9 @@ A Local by WP Engine add-on that allows you to easily toggle WordPress debug set
 - ✅ Toggle `WP_DEBUG` on/off
 - ✅ Toggle `WP_DEBUG_LOG` (only visible when `WP_DEBUG` is enabled)
 - ✅ Toggle `WP_DEBUG_DISPLAY` (only visible when `WP_DEBUG` is enabled)
+- ✅ **Debug Log Viewer** - View `debug.log` directly in Local when `WP_DEBUG_LOG` is enabled
+- ✅ **Clear Log** - Clear the debug log file with one click
+- ✅ **Open Log File** - Open the log file in Finder/Explorer
 - ✅ Automatically reads current debug settings from `wp-config.php`
 - ✅ Safely updates `wp-config.php` with proper backups
 - ✅ Notifications when settings are saved
@@ -18,12 +21,20 @@ A Local by WP Engine add-on that allows you to easily toggle WordPress debug set
 
 ## Installation
 
-### Prerequisites
+### Option 1: Install from Disk (Recommended)
 
-- [Local by WP Engine](https://localwp.com/) installed and running
-- Node.js and Yarn (or npm) installed
+1. **Download the packaged add-on**:
+   - Download `wp-debug-toggler-v1.0.0.tgz` from the [Releases](https://github.com/EverleeLabs/local-debug/releases) page
+   - Or build your own package (see [Building for Distribution](#building-for-distribution) below)
 
-### Steps
+2. **Install in Local**:
+   - Open Local by WP Engine
+   - Go to Settings → Add-ons
+   - Click **"Install Add-on from Disk"**
+   - Select the `wp-debug-toggler-v1.0.0.tgz` file
+   - Enable the add-on if it's not already enabled
+
+### Option 2: Manual Installation (Development)
 
 1. **Clone or download this repository** into your Local add-ons directory:
 
@@ -57,11 +68,15 @@ A Local by WP Engine add-on that allows you to easily toggle WordPress debug set
 1. Open Local and select a WordPress site
 2. Navigate to the **Tools** tab in the site dashboard
 3. Click on **"WP Debug"** in the Tools menu
-4. Use the checkboxes to toggle debug settings:
-   - Check **WP_DEBUG** to enable debug mode
+4. Use the toggle switches to enable debug settings:
+   - Toggle **WP_DEBUG** to enable debug mode
    - When WP_DEBUG is enabled, you'll see two additional options:
      - **WP_DEBUG_LOG**: Logs errors to `wp-content/debug.log`
      - **WP_DEBUG_DISPLAY**: Displays errors on the frontend
+5. **View Debug Log**: When `WP_DEBUG_LOG` is enabled, a debug log viewer appears below the toggles:
+   - **Refresh** - Reload the log content
+   - **Clear Log** - Clear all log entries
+   - **Open File** - Open the log file in Finder/Explorer
 
 ## How It Works
 
@@ -82,6 +97,30 @@ yarn watch
 # or
 npm run watch
 ```
+
+### Building for Distribution
+
+To create a distributable `.tgz` package that others can install via "Install Add-on from Disk":
+
+```bash
+yarn package
+# or
+npm run package
+```
+
+This will:
+1. Build the add-on (compile TypeScript and bundle with webpack)
+2. Create a `.tgz` package containing only the necessary files
+3. Output: `wp-debug-toggler-v{version}.tgz`
+
+The package includes:
+- `package.json` - Add-on metadata
+- `lib/` - Compiled JavaScript files
+- `icon.svg` - Add-on icon
+- `README.md` - Documentation
+- `LICENSE` - License file
+
+**Note**: The package excludes source files, node_modules, and build configuration files to keep it lightweight.
 
 ### Project Structure
 

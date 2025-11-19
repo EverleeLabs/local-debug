@@ -13,9 +13,17 @@ module.exports = [
       libraryTarget: 'commonjs2',
     },
     resolve: { extensions: ['.js', '.jsx'] },
-    externals: {
-      '@getflywheel/local-components': 'commonjs @getflywheel/local-components',
-    },
+    externals: [
+      function ({ context, request }, callback) {
+        // Handle @getflywheel/local-components as external
+        if (request === '@getflywheel/local-components') {
+          return callback(null, 'commonjs @getflywheel/local-components');
+        }
+        // Let webpack handle everything else
+        callback();
+      },
+    ],
+    externalsType: 'commonjs',
     module: {
       rules: [
         {

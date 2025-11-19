@@ -14,7 +14,8 @@
   "main": "lib/main.js",
   "scripts": {
     "build": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop && webpack --config webpack.config.js",
-    "watch": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop --watch & webpack --config webpack.config.js --watch"
+    "watch": "npx tsc src/main.ts --outDir lib --module commonjs --target es2015 --esModuleInterop --watch & webpack --config webpack.config.js --watch",
+    "package": "./package-addon.sh"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
