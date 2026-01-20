@@ -24,15 +24,16 @@ A Local by WP Engine add-on that allows you to easily toggle WordPress debug set
 ### Option 1: Install from Disk (Recommended)
 
 1. **Download the packaged add-on**:
-   - Download `wp-debug-toggler-v1.0.0.tgz` from the [Releases](https://github.com/EverleeLabs/local-debug/releases) page
+   - Download the latest release zip from the [Releases](https://github.com/EverleeLabs/local-debug/releases) page
    - Or build your own package (see [Building for Distribution](#building-for-distribution) below)
 
 2. **Install in Local**:
    - Open Local by WP Engine
-   - Go to Settings → Add-ons
+   - Go to Settings → Add-ons → Installed
    - Click **"Install Add-on from Disk"**
-   - Select the `wp-debug-toggler-v1.0.0.tgz` file
+   - Select the .tgz file you downloaded from releases
    - Enable the add-on if it's not already enabled
+   - You'll likely need to restart Local
 
 ### Option 2: Manual Installation (Development)
 
